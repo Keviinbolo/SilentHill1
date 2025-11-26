@@ -1,7 +1,7 @@
 package com.Kevin.SilentHill1.Entities;
 
 import jakarta.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "personajes")
@@ -10,7 +10,6 @@ public class Personaje {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(nullable = false)
     private String nombre;
 
@@ -18,9 +17,10 @@ public class Personaje {
     private String historia;
 
     @OneToOne(mappedBy = "personaje", cascade = CascadeType.ALL)
+    @JsonIgnore // Para evitar referencias circulares en la serialización JSON
     private Protagonista protagonista;
 
-    // Constructores
+    // Constructores, getters y setters igual...
     public Personaje() {}
 
     public Personaje(String nombre, String historia) {
@@ -28,7 +28,7 @@ public class Personaje {
         this.historia = historia;
     }
 
-    // Getters y Setters
+    // Getters y Setters...
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

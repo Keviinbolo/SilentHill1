@@ -1,6 +1,7 @@
 package com.Kevin.SilentHill1.Entities;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "protagonistas")
@@ -16,9 +17,10 @@ public class Protagonista {
 
     @OneToOne
     @JoinColumn(name = "personaje_id", unique = true)
+    @JsonIgnoreProperties({"protagonista"}) // ← AÑADIR ESTO
     private Personaje personaje;
 
-    // Constructores
+    // Constructores, getters y setters igual...
     public Protagonista() {}
 
     public Protagonista(Integer salud, String inventario, String armaActual, String nivelDificultad) {
@@ -28,7 +30,7 @@ public class Protagonista {
         this.nivelDificultad = nivelDificultad;
     }
 
-    // Getters y Setters
+    // Getters y Setters...
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

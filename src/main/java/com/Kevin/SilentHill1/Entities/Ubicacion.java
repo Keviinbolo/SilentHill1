@@ -1,9 +1,9 @@
 package com.Kevin.SilentHill1.Entities;
 
-
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "ubicaciones")
@@ -25,12 +25,14 @@ public class Ubicacion {
             joinColumns = @JoinColumn(name = "ubicacion_id"),
             inverseJoinColumns = @JoinColumn(name = "objeto_id")
     )
+    @JsonIgnore // ← AÑADIR ESTO
     private Set<Objeto> objetosEncontrados = new HashSet<>();
 
     @OneToMany(mappedBy = "ubicacion", cascade = CascadeType.ALL)
+    @JsonIgnore // ← AÑADIR ESTO
     private Set<Enemigo> enemigos = new HashSet<>();
 
-    // Constructores
+    // Constructores, getters y setters igual...
     public Ubicacion() {}
 
     public Ubicacion(String nombre, String tipo, String descripcion, Integer peligroNivel) {
@@ -40,7 +42,7 @@ public class Ubicacion {
         this.peligroNivel = peligroNivel;
     }
 
-    // Getters y Setters
+    // Getters y Setters...
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

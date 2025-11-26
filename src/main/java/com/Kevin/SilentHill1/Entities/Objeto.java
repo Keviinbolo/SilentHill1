@@ -3,6 +3,7 @@ package com.Kevin.SilentHill1.Entities;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "objetos")
@@ -20,9 +21,10 @@ public class Objeto {
     private String rareza;
 
     @ManyToMany(mappedBy = "objetosEncontrados")
+    @JsonIgnore // ← AÑADIR ESTO
     private Set<Ubicacion> ubicaciones = new HashSet<>();
 
-    // Constructores
+    // Constructores, getters y setters igual...
     public Objeto() {}
 
     public Objeto(String nombre, String tipo, String descripcion, String efecto, String rareza) {
@@ -33,7 +35,7 @@ public class Objeto {
         this.rareza = rareza;
     }
 
-    // Getters y Setters
+    // Getters y Setters...
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
