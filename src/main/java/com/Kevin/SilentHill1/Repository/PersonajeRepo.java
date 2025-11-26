@@ -1,6 +1,6 @@
 package com.Kevin.SilentHill1.Repository;
 
-import com.silenthill.model.Personaje;
+import com.Kevin.SilentHill1.Entities.Personaje;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PersonajeRepository extends JpaRepository<Personaje, Long> {
+public interface PersonajeRepo extends JpaRepository<Personaje, Long> {
 
     // Buscar por nombre
     Optional<Personaje> findByNombre(String nombre);

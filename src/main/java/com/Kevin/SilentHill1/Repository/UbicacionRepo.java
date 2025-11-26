@@ -1,6 +1,6 @@
 package com.Kevin.SilentHill1.Repository;
 
-import com.silenthill.model.Ubicacion;
+import com.Kevin.SilentHill1.Entities.Ubicacion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UbicacionRepository extends JpaRepository<Ubicacion, Long> {
+public interface UbicacionRepo extends JpaRepository<Ubicacion, Long> {
 
     // Buscar por nombre exacto
     Optional<Ubicacion> findByNombre(String nombre);

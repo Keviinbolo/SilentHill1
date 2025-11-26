@@ -1,8 +1,8 @@
 package com.Kevin.SilentHill1.Controllers;
 
 
-import com.silenthill.Entities.Protagonista;
-import com.silenthill.Repository.ProtagonistaRepository;
+import com.Kevin.SilentHill1.Entities.Protagonista;
+import com.Kevin.SilentHill1.Repository.ProtagonistaRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

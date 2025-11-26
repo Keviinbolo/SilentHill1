@@ -1,8 +1,8 @@
 package com.Kevin.SilentHill1.Controllers;
 
 
-import com.silenthill.Entities.Enemigo;
-import com.silenthill.Repository.EnemigoRepository;
+import com.Kevin.SilentHill1.Entities.Enemigo;
+import com.Kevin.SilentHill1.Repository.EnemigoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,7 @@
 package com.Kevin.SilentHill1.Controllers;
 
-import com.silenthill.Entities.Ubicacion;
-import com.silenthill.Repository.UbicacionRepository;
+import com.Kevin.SilentHill1.Entities.Ubicacion;
+import com.Kevin.SilentHill1.Repository.UbicacionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

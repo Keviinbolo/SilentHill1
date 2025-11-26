@@ -1,6 +1,6 @@
 package com.Kevin.SilentHill1.Repository;
 
-import com.silenthill.model.Objeto;
+import com.Kevin.SilentHill1.Entities.Objeto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ObjetoRepository extends JpaRepository<Objeto, Long> {
+public interface ObjetoRepo extends JpaRepository<Objeto, Long> {
 
     // Buscar por nombre exacto
     Optional<Objeto> findByNombre(String nombre);

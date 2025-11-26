@@ -1,6 +1,6 @@
 package com.Kevin.SilentHill1.Repository;
 
-import com.silenthill.model.Enemigo;
+import com.Kevin.SilentHill1.Entities.Enemigo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EnemigoRepository extends JpaRepository<Enemigo, Long> {
+public interface EnemigoRepo extends JpaRepository<Enemigo, Long> {
 
     // Buscar por nombre exacto
     Optional<Enemigo> findByNombre(String nombre);

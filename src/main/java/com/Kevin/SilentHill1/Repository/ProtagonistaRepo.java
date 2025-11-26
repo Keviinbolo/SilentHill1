@@ -1,15 +1,16 @@
 package com.Kevin.SilentHill1.Repository;
 
-import com.silenthill.model.Protagonista;
+import com.Kevin.SilentHill1.Entities.Protagonista;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProtagonistaRepository extends JpaRepository<Protagonista, Long> {
+public interface ProtagonistaRepo extends JpaRepository<Protagonista, Long> {
 
     // Buscar por nivel de dificultad
     List<Protagonista> findByNivelDificultad(String nivelDificultad);

@@ -1,7 +1,7 @@
 package com.Kevin.SilentHill1.Controllers;
 
-import com.silenthill.Entities.Objeto;
-import com.silenthill.Repository.ObjetoRepository;
+import com.Kevin.SilentHill1.Entities.Objeto;
+import com.Kevin.SilentHill1.Repository.ObjetoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

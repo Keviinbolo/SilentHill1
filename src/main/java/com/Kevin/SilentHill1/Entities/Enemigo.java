@@ -2,7 +2,7 @@ package com.Kevin.SilentHill1.Entities;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+
 
 @Entity
 @Table(name = "enemigos")
@@ -11,7 +11,7 @@ public class Enemigo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+
     @Column(nullable = false)
     private String nombre;
 

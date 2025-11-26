@@ -1,7 +1,7 @@
 package com.Kevin.SilentHill1.Controllers;
 
-import com.silenthill.Entities.Personaje;
-import com.silenthill.Repository.PersonajeRepository;
+import com.Kevin.SilentHill1.Entities.Personaje;
+import com.Kevin.SilentHill1.Repository.PersonajeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
