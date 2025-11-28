@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/objetos")
+@RequestMapping("/SilentHill1/objetos")
 @CrossOrigin(origins = "*")
 public class ObjetoController {
 

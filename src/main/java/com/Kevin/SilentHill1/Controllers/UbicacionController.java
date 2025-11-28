@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/ubicaciones")
+@RequestMapping("/SilentHill1/ubicaciones")
 @CrossOrigin(origins = "*")
 public class UbicacionController {
 
