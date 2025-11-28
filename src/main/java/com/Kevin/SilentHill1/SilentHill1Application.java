@@ -139,7 +139,7 @@ public class SilentHill1Application {
 
             System.out.println(" Enemigos creados: " + enemigoRepository.count());
 
-            // MOSTRAR RESUMEN
+            /*// MOSTRAR RESUMEN
             System.out.println("\n === BASE DE DATOS INICIALIZADA EXITOSAMENTE === ");
             System.out.println(" RESUMEN DE DATOS CREADOS:");
             System.out.println("    Ubicaciones: " + ubicacionRepository.count());
@@ -155,11 +155,9 @@ public class SilentHill1Application {
             System.out.println("   http://localhost:4000/api/protagonistas");
             System.out.println("   http://localhost:4000/api/enemigos");
 
-            System.out.println("\n La aplicación está lista para usar!");
-            System.out.println(" Puedes probar los endpoints en tu navegador o con Postman");
 
-            // Mantener la aplicación corriendo
-            System.out.println("\n La aplicación seguirá corriendo. Presiona Ctrl+C para detenerla.");
+
+           */
         };
     }
 }
