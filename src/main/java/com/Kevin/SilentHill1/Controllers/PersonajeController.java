@@ -1,72 +1,64 @@
 package com.Kevin.SilentHill1.Controllers;
 
-import com.Kevin.SilentHill1.Entities.Personaje;
-import com.Kevin.SilentHill1.Repository.PersonajeRepo;
+import com.Kevin.SilentHill1.DTO.PersonajeDTO;
+import com.Kevin.SilentHill1.Service.PersonajeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/SilentHill1/personajes")
+@RequestMapping("/api/personajes")
 @CrossOrigin(origins = "*")
 public class PersonajeController {
 
     @Autowired
-    private PersonajeRepo personajeRepository;
+    private PersonajeService personajeService;
 
     @GetMapping
-    public List<Personaje> getAllPersonajes() {
-        return personajeRepository.findAll();
+    public ResponseEntity<List<PersonajeDTO>> getAllPersonajes() {
+        List<PersonajeDTO> personajes = personajeService.getAllPersonajes();
+        return ResponseEntity.ok(personajes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Personaje> getPersonajeById(@PathVariable Long id) {
-        Optional<Personaje> personaje = personajeRepository.findById(id);
-        return personaje.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PersonajeDTO> getPersonajeById(@PathVariable Long id) {
+        PersonajeDTO personaje = personajeService.getPersonajeById(id);
+        return ResponseEntity.ok(personaje);
     }
 
     @GetMapping("/nombre/{nombre}")
-    public ResponseEntity<Personaje> getPersonajeByNombre(@PathVariable String nombre) {
-        Optional<Personaje> personaje = personajeRepository.findByNombre(nombre);
-        return personaje.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PersonajeDTO> getPersonajeByNombre(@PathVariable String nombre) {
+        PersonajeDTO personaje = personajeService.getPersonajeByNombre(nombre);
+        return ResponseEntity.ok(personaje);
     }
 
     @GetMapping("/buscar/{texto}")
-    public List<Personaje> buscarPersonajesPorNombre(@PathVariable String texto) {
-        return personajeRepository.findByNombreContainingIgnoreCase(texto);
-    }
-
-    @GetMapping("/historia/{texto}")
-    public List<Personaje> buscarPorTextoEnHistoria(@PathVariable String texto) {
-        return personajeRepository.buscarPorTextoEnHistoria(texto);
+    public ResponseEntity<List<PersonajeDTO>> buscarPersonajes(@PathVariable String texto) {
+        List<PersonajeDTO> personajes = personajeService.buscarPersonajes(texto);
+        return ResponseEntity.ok(personajes);
     }
 
     @PostMapping
-    public Personaje createPersonaje(@RequestBody Personaje personaje) {
-        return personajeRepository.save(personaje);
+    public ResponseEntity<PersonajeDTO> createPersonaje(@Valid @RequestBody PersonajeDTO personajeDTO) {
+        PersonajeDTO created = personajeService.createPersonaje(personajeDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Personaje> updatePersonaje(@PathVariable Long id, @RequestBody Personaje personajeDetails) {
-        Optional<Personaje> optionalPersonaje = personajeRepository.findById(id);
-        if (optionalPersonaje.isPresent()) {
-            Personaje personaje = optionalPersonaje.get();
-            personaje.setNombre(personajeDetails.getNombre());
-            personaje.setHistoria(personajeDetails.getHistoria());
-            return ResponseEntity.ok(personajeRepository.save(personaje));
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<PersonajeDTO> updatePersonaje(
+            @PathVariable Long id,
+            @Valid @RequestBody PersonajeDTO personajeDTO) {
+        PersonajeDTO updated = personajeService.updatePersonaje(id, personajeDTO);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePersonaje(@PathVariable Long id) {
-        if (personajeRepository.existsById(id)) {
-            personajeRepository.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+        personajeService.deletePersonaje(id);
+        return ResponseEntity.noContent().build();
     }
 }
