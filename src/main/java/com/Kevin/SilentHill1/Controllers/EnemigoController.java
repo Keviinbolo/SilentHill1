@@ -1,97 +1,100 @@
 package com.Kevin.SilentHill1.Controllers;
 
-
-import com.Kevin.SilentHill1.Entities.Enemigo;
-import com.Kevin.SilentHill1.Repository.EnemigoRepo;
+import com.Kevin.SilentHill1.DTO.EnemigoDTO;
+import com.Kevin.SilentHill1.Service.EnemigoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/SilentHill1/enemigos")
+@RequestMapping("/api/enemigos")
 @CrossOrigin(origins = "*")
 public class EnemigoController {
 
     @Autowired
-    private EnemigoRepo enemigoRepository;
+    private EnemigoService enemigoService;
 
     @GetMapping
-    public List<Enemigo> getAllEnemigos() {
-        return enemigoRepository.findAll();
+    public ResponseEntity<List<EnemigoDTO>> getAllEnemigos() {
+        List<EnemigoDTO> enemigos = enemigoService.getAllEnemigos();
+        return ResponseEntity.ok(enemigos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Enemigo> getEnemigoById(@PathVariable Long id) {
-        Optional<Enemigo> enemigo = enemigoRepository.findById(id);
-        return enemigo.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<EnemigoDTO> getEnemigoById(@PathVariable Long id) {
+        EnemigoDTO enemigo = enemigoService.getEnemigoById(id);
+        return ResponseEntity.ok(enemigo);
     }
 
     @GetMapping("/nombre/{nombre}")
-    public ResponseEntity<Enemigo> getEnemigoByNombre(@PathVariable String nombre) {
-        Optional<Enemigo> enemigo = enemigoRepository.findByNombre(nombre);
-        return enemigo.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<EnemigoDTO> getEnemigoByNombre(@PathVariable String nombre) {
+        EnemigoDTO enemigo = enemigoService.getEnemigoByNombre(nombre);
+        return ResponseEntity.ok(enemigo);
     }
 
     @GetMapping("/tipo/{tipo}")
-    public List<Enemigo> getEnemigosPorTipo(@PathVariable String tipo) {
-        return enemigoRepository.findByTipo(tipo);
+    public ResponseEntity<List<EnemigoDTO>> getEnemigosPorTipo(@PathVariable String tipo) {
+        List<EnemigoDTO> enemigos = enemigoService.getEnemigosPorTipo(tipo);
+        return ResponseEntity.ok(enemigos);
     }
 
     @GetMapping("/debilidad/{debilidad}")
-    public List<Enemigo> getEnemigosPorDebilidad(@PathVariable String debilidad) {
-        return enemigoRepository.findByDebilidad(debilidad);
+    public ResponseEntity<List<EnemigoDTO>> getEnemigosPorDebilidad(@PathVariable String debilidad) {
+        List<EnemigoDTO> enemigos = enemigoService.getEnemigosPorDebilidad(debilidad);
+        return ResponseEntity.ok(enemigos);
     }
 
     @GetMapping("/buscar/{texto}")
-    public List<Enemigo> buscarEnemigosPorNombre(@PathVariable String texto) {
-        return enemigoRepository.findByNombreContainingIgnoreCase(texto);
+    public ResponseEntity<List<EnemigoDTO>> buscarEnemigos(@PathVariable String texto) {
+        List<EnemigoDTO> enemigos = enemigoService.buscarEnemigos(texto);
+        return ResponseEntity.ok(enemigos);
     }
 
-    @GetMapping("/ubicacion/{nombreUbicacion}")
-    public List<Enemigo> getEnemigosEnUbicacion(@PathVariable String nombreUbicacion) {
-        return enemigoRepository.findEnemigosEnUbicacion(nombreUbicacion);
+    @GetMapping("/ubicacion/{ubicacionId}")
+    public ResponseEntity<List<EnemigoDTO>> getEnemigosEnUbicacion(@PathVariable Long ubicacionId) {
+        // Filtramos manualmente ya que no hay método directo
+        List<EnemigoDTO> allEnemigos = enemigoService.getAllEnemigos();
+        List<EnemigoDTO> enemigosEnUbicacion = allEnemigos.stream()
+                .filter(enemigo -> enemigo.getUbicacionId() != null &&
+                        enemigo.getUbicacionId().equals(ubicacionId))
+                .toList();
+        return ResponseEntity.ok(enemigosEnUbicacion);
     }
 
     @GetMapping("/filtro")
-    public List<Enemigo> getEnemigosPorTipoYUbicacion(
+    public ResponseEntity<List<EnemigoDTO>> getEnemigosPorTipoYUbicacion(
             @RequestParam String tipo,
             @RequestParam Long ubicacionId) {
-        return enemigoRepository.findByTipoAndUbicacionId(tipo, ubicacionId);
+        // Filtramos manualmente
+        List<EnemigoDTO> enemigosTipo = enemigoService.getEnemigosPorTipo(tipo);
+        List<EnemigoDTO> enemigosFiltrados = enemigosTipo.stream()
+                .filter(enemigo -> enemigo.getUbicacionId() != null &&
+                        enemigo.getUbicacionId().equals(ubicacionId))
+                .toList();
+        return ResponseEntity.ok(enemigosFiltrados);
     }
 
     @PostMapping
-    public Enemigo createEnemigo(@RequestBody Enemigo enemigo) {
-        return enemigoRepository.save(enemigo);
+    public ResponseEntity<EnemigoDTO> createEnemigo(@Valid @RequestBody EnemigoDTO enemigoDTO) {
+        EnemigoDTO created = enemigoService.createEnemigo(enemigoDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Enemigo> updateEnemigo(@PathVariable Long id, @RequestBody Enemigo enemigoDetails) {
-        Optional<Enemigo> optionalEnemigo = enemigoRepository.findById(id);
-        if (optionalEnemigo.isPresent()) {
-            Enemigo enemigo = optionalEnemigo.get();
-            enemigo.setNombre(enemigoDetails.getNombre());
-            enemigo.setTipo(enemigoDetails.getTipo());
-            enemigo.setDebilidad(enemigoDetails.getDebilidad());
-
-            // Actualizar ubicación si se proporciona
-            if (enemigoDetails.getUbicacion() != null) {
-                enemigo.setUbicacion(enemigoDetails.getUbicacion());
-            }
-
-            return ResponseEntity.ok(enemigoRepository.save(enemigo));
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<EnemigoDTO> updateEnemigo(
+            @PathVariable Long id,
+            @Valid @RequestBody EnemigoDTO enemigoDTO) {
+        EnemigoDTO updated = enemigoService.updateEnemigo(id, enemigoDTO);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEnemigo(@PathVariable Long id) {
-        if (enemigoRepository.existsById(id)) {
-            enemigoRepository.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+        enemigoService.deleteEnemigo(id);
+        return ResponseEntity.noContent().build();
     }
 }

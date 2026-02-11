@@ -1,98 +1,89 @@
 package com.Kevin.SilentHill1.Controllers;
 
-import com.Kevin.SilentHill1.Entities.Objeto;
-import com.Kevin.SilentHill1.Repository.ObjetoRepo;
+import com.Kevin.SilentHill1.DTO.ObjetoDTO;
+import com.Kevin.SilentHill1.Service.ObjetoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/SilentHill1/objetos")
+@RequestMapping("/api/objetos")
 @CrossOrigin(origins = "*")
 public class ObjetoController {
 
     @Autowired
-    private ObjetoRepo objetoRepository;
+    private ObjetoService objetoService;
 
     @GetMapping
-    public List<Objeto> getAllObjetos() {
-        return objetoRepository.findAll();
+    public ResponseEntity<List<ObjetoDTO>> getAllObjetos() {
+        List<ObjetoDTO> objetos = objetoService.getAllObjetos();
+        return ResponseEntity.ok(objetos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Objeto> getObjetoById(@PathVariable Long id) {
-        Optional<Objeto> objeto = objetoRepository.findById(id);
-        return objeto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ObjetoDTO> getObjetoById(@PathVariable Long id) {
+        ObjetoDTO objeto = objetoService.getObjetoById(id);
+        return ResponseEntity.ok(objeto);
     }
 
     @GetMapping("/nombre/{nombre}")
-    public ResponseEntity<Objeto> getObjetoByNombre(@PathVariable String nombre) {
-        Optional<Objeto> objeto = objetoRepository.findByNombre(nombre);
-        return objeto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ObjetoDTO> getObjetoByNombre(@PathVariable String nombre) {
+        ObjetoDTO objeto = objetoService.getObjetoByNombre(nombre);
+        return ResponseEntity.ok(objeto);
     }
 
     @GetMapping("/tipo/{tipo}")
-    public List<Objeto> getObjetosPorTipo(@PathVariable String tipo) {
-        return objetoRepository.findByTipo(tipo);
+    public ResponseEntity<List<ObjetoDTO>> getObjetosPorTipo(@PathVariable String tipo) {
+        List<ObjetoDTO> objetos = objetoService.getObjetosPorTipo(tipo);
+        return ResponseEntity.ok(objetos);
     }
 
     @GetMapping("/rareza/{rareza}")
-    public List<Objeto> getObjetosPorRareza(@PathVariable String rareza) {
-        return objetoRepository.findByRareza(rareza);
+    public ResponseEntity<List<ObjetoDTO>> getObjetosPorRareza(@PathVariable String rareza) {
+        List<ObjetoDTO> objetos = objetoService.getObjetosPorRareza(rareza);
+        return ResponseEntity.ok(objetos);
     }
 
     @GetMapping("/buscar/{texto}")
-    public List<Objeto> buscarObjetosPorNombre(@PathVariable String texto) {
-        return objetoRepository.findByNombreContainingIgnoreCase(texto);
-    }
-
-    @GetMapping("/ubicacion/{nombreUbicacion}")
-    public List<Objeto> getObjetosEnUbicacion(@PathVariable String nombreUbicacion) {
-        return objetoRepository.findObjetosEnUbicacion(nombreUbicacion);
+    public ResponseEntity<List<ObjetoDTO>> buscarObjetos(@PathVariable String texto) {
+        List<ObjetoDTO> objetos = objetoService.buscarObjetos(texto);
+        return ResponseEntity.ok(objetos);
     }
 
     @GetMapping("/filtro")
-    public List<Objeto> getObjetosPorTipoYRareza(
+    public ResponseEntity<List<ObjetoDTO>> getObjetosPorTipoYRareza(
             @RequestParam String tipo,
             @RequestParam String rareza) {
-        return objetoRepository.findByTipoAndRareza(tipo, rareza);
+        // Primero filtramos por tipo
+        List<ObjetoDTO> objetosTipo = objetoService.getObjetosPorTipo(tipo);
+        // Luego filtramos por rareza (manualmente ya que no hay método combinado)
+        List<ObjetoDTO> objetosFiltrados = objetosTipo.stream()
+                .filter(objeto -> objeto.getRareza().equalsIgnoreCase(rareza))
+                .toList();
+        return ResponseEntity.ok(objetosFiltrados);
     }
 
     @PostMapping
-    public Objeto createObjeto(@RequestBody Objeto objeto) {
-        return objetoRepository.save(objeto);
+    public ResponseEntity<ObjetoDTO> createObjeto(@Valid @RequestBody ObjetoDTO objetoDTO) {
+        ObjetoDTO created = objetoService.createObjeto(objetoDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Objeto> updateObjeto(@PathVariable Long id, @RequestBody Objeto objetoDetails) {
-        Optional<Objeto> optionalObjeto = objetoRepository.findById(id);
-        if (optionalObjeto.isPresent()) {
-            Objeto objeto = optionalObjeto.get();
-            objeto.setNombre(objetoDetails.getNombre());
-            objeto.setTipo(objetoDetails.getTipo());
-            objeto.setDescripcion(objetoDetails.getDescripcion());
-            objeto.setEfecto(objetoDetails.getEfecto());
-            objeto.setRareza(objetoDetails.getRareza());
-
-            // Actualizar relaciones si se proporcionan
-            if (objetoDetails.getUbicaciones() != null) {
-                objeto.setUbicaciones(objetoDetails.getUbicaciones());
-            }
-
-            return ResponseEntity.ok(objetoRepository.save(objeto));
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ObjetoDTO> updateObjeto(
+            @PathVariable Long id,
+            @Valid @RequestBody ObjetoDTO objetoDTO) {
+        ObjetoDTO updated = objetoService.updateObjeto(id, objetoDTO);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteObjeto(@PathVariable Long id) {
-        if (objetoRepository.existsById(id)) {
-            objetoRepository.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+        objetoService.deleteObjeto(id);
+        return ResponseEntity.noContent().build();
     }
 }
