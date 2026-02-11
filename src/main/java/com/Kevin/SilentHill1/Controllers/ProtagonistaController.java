@@ -1,85 +1,85 @@
 package com.Kevin.SilentHill1.Controllers;
 
-
-import com.Kevin.SilentHill1.Entities.Protagonista;
-import com.Kevin.SilentHill1.Repository.ProtagonistaRepo;
+import com.Kevin.SilentHill1.DTO.ProtagonistaDTO;
+import com.Kevin.SilentHill1.Service.ProtagonistaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/SilentHill1/protagonistas")
+@RequestMapping("/api/protagonistas")
 @CrossOrigin(origins = "*")
 public class ProtagonistaController {
 
     @Autowired
-    private ProtagonistaRepo protagonistaRepository;
+    private ProtagonistaService protagonistaService;
 
     @GetMapping
-    public List<Protagonista> getAllProtagonistas() {
-        return protagonistaRepository.findAll();
+    public ResponseEntity<List<ProtagonistaDTO>> getAllProtagonistas() {
+        List<ProtagonistaDTO> protagonistas = protagonistaService.getAllProtagonistas();
+        return ResponseEntity.ok(protagonistas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Protagonista> getProtagonistaById(@PathVariable Long id) {
-        Optional<Protagonista> protagonista = protagonistaRepository.findById(id);
-        return protagonista.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ProtagonistaDTO> getProtagonistaById(@PathVariable Long id) {
+        ProtagonistaDTO protagonista = protagonistaService.getProtagonistaById(id);
+        return ResponseEntity.ok(protagonista);
     }
 
     @GetMapping("/dificultad/{nivel}")
-    public List<Protagonista> getProtagonistasPorDificultad(@PathVariable String nivel) {
-        return protagonistaRepository.findByNivelDificultad(nivel);
+    public ResponseEntity<List<ProtagonistaDTO>> getProtagonistasPorDificultad(@PathVariable String nivel) {
+        List<ProtagonistaDTO> protagonistas = protagonistaService.getProtagonistasPorDificultad(nivel);
+        return ResponseEntity.ok(protagonistas);
     }
 
     @GetMapping("/salud-mayor-que/{salud}")
-    public List<Protagonista> getProtagonistasConSaludMayor(@PathVariable Integer salud) {
-        return protagonistaRepository.findBySaludGreaterThan(salud);
+    public ResponseEntity<List<ProtagonistaDTO>> getProtagonistasConSaludMayor(@PathVariable Integer salud) {
+        List<ProtagonistaDTO> protagonistas = protagonistaService.getProtagonistasConSaludMayor(salud);
+        return ResponseEntity.ok(protagonistas);
     }
 
     @GetMapping("/arma/{arma}")
-    public List<Protagonista> getProtagonistasPorArma(@PathVariable String arma) {
-        return protagonistaRepository.findByArmaActual(arma);
+    public ResponseEntity<List<ProtagonistaDTO>> getProtagonistasPorArma(@PathVariable String arma) {
+        List<ProtagonistaDTO> protagonistas = protagonistaService.getProtagonistasPorArma(arma);
+        return ResponseEntity.ok(protagonistas);
     }
 
-    @GetMapping("/personaje/{nombrePersonaje}")
-    public ResponseEntity<Protagonista> getProtagonistaPorNombrePersonaje(@PathVariable String nombrePersonaje) {
-        Optional<Protagonista> protagonista = protagonistaRepository.findByNombrePersonaje(nombrePersonaje);
-        return protagonista.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    @GetMapping("/personaje/{personajeId}")
+    public ResponseEntity<ProtagonistaDTO> getProtagonistaPorPersonaje(@PathVariable Long personajeId) {
+        // Filtramos manualmente
+        List<ProtagonistaDTO> allProtagonistas = protagonistaService.getAllProtagonistas();
+        ProtagonistaDTO protagonista = allProtagonistas.stream()
+                .filter(p -> p.getPersonajeId() != null && p.getPersonajeId().equals(personajeId))
+                .findFirst()
+                .orElse(null);
+
+        if (protagonista == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(protagonista);
     }
 
     @PostMapping
-    public Protagonista createProtagonista(@RequestBody Protagonista protagonista) {
-        return protagonistaRepository.save(protagonista);
+    public ResponseEntity<ProtagonistaDTO> createProtagonista(@Valid @RequestBody ProtagonistaDTO protagonistaDTO) {
+        ProtagonistaDTO created = protagonistaService.createProtagonista(protagonistaDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Protagonista> updateProtagonista(@PathVariable Long id, @RequestBody Protagonista protagonistaDetails) {
-        Optional<Protagonista> optionalProtagonista = protagonistaRepository.findById(id);
-        if (optionalProtagonista.isPresent()) {
-            Protagonista protagonista = optionalProtagonista.get();
-            protagonista.setSalud(protagonistaDetails.getSalud());
-            protagonista.setInventario(protagonistaDetails.getInventario());
-            protagonista.setArmaActual(protagonistaDetails.getArmaActual());
-            protagonista.setNivelDificultad(protagonistaDetails.getNivelDificultad());
-
-            if (protagonistaDetails.getPersonaje() != null) {
-                protagonista.setPersonaje(protagonistaDetails.getPersonaje());
-            }
-
-            return ResponseEntity.ok(protagonistaRepository.save(protagonista));
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ProtagonistaDTO> updateProtagonista(
+            @PathVariable Long id,
+            @Valid @RequestBody ProtagonistaDTO protagonistaDTO) {
+        ProtagonistaDTO updated = protagonistaService.updateProtagonista(id, protagonistaDTO);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProtagonista(@PathVariable Long id) {
-        if (protagonistaRepository.existsById(id)) {
-            protagonistaRepository.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+        protagonistaService.deleteProtagonista(id);
+        return ResponseEntity.noContent().build();
     }
 }

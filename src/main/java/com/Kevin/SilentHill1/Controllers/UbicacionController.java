@@ -1,90 +1,76 @@
 package com.Kevin.SilentHill1.Controllers;
 
-import com.Kevin.SilentHill1.Entities.Ubicacion;
-import com.Kevin.SilentHill1.Repository.UbicacionRepo;
+import com.Kevin.SilentHill1.DTO.UbicacionDTO;
+import com.Kevin.SilentHill1.Service.UbicacionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/SilentHill1/ubicaciones")
+@RequestMapping("/api/ubicaciones")
 @CrossOrigin(origins = "*")
 public class UbicacionController {
 
     @Autowired
-    private UbicacionRepo ubicacionRepository;
+    private UbicacionService ubicacionService;
 
     @GetMapping
-    public List<Ubicacion> getAllUbicaciones() {
-        return ubicacionRepository.findAll();
+    public ResponseEntity<List<UbicacionDTO>> getAllUbicaciones() {
+        List<UbicacionDTO> ubicaciones = ubicacionService.getAllUbicaciones();
+        return ResponseEntity.ok(ubicaciones);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Ubicacion> getUbicacionById(@PathVariable Long id) {
-        Optional<Ubicacion> ubicacion = ubicacionRepository.findById(id);
-        return ubicacion.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UbicacionDTO> getUbicacionById(@PathVariable Long id) {
+        UbicacionDTO ubicacion = ubicacionService.getUbicacionById(id);
+        return ResponseEntity.ok(ubicacion);
     }
 
     @GetMapping("/nombre/{nombre}")
-    public ResponseEntity<Ubicacion> getUbicacionByNombre(@PathVariable String nombre) {
-        Optional<Ubicacion> ubicacion = ubicacionRepository.findByNombre(nombre);
-        return ubicacion.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UbicacionDTO> getUbicacionByNombre(@PathVariable String nombre) {
+        UbicacionDTO ubicacion = ubicacionService.getUbicacionByNombre(nombre);
+        return ResponseEntity.ok(ubicacion);
     }
 
     @GetMapping("/tipo/{tipo}")
-    public List<Ubicacion> getUbicacionesPorTipo(@PathVariable String tipo) {
-        return ubicacionRepository.findByTipo(tipo);
+    public ResponseEntity<List<UbicacionDTO>> getUbicacionesPorTipo(@PathVariable String tipo) {
+        List<UbicacionDTO> ubicaciones = ubicacionService.getUbicacionesPorTipo(tipo);
+        return ResponseEntity.ok(ubicaciones);
     }
 
     @GetMapping("/peligro/{nivel}")
-    public List<Ubicacion> getUbicacionesPorPeligro(@PathVariable Integer nivel) {
-        return ubicacionRepository.findByPeligroNivelGreaterThanEqual(nivel);
+    public ResponseEntity<List<UbicacionDTO>> getUbicacionesPorPeligro(@PathVariable Integer nivel) {
+        List<UbicacionDTO> ubicaciones = ubicacionService.getUbicacionesPorPeligro(nivel);
+        return ResponseEntity.ok(ubicaciones);
     }
 
     @GetMapping("/buscar/{texto}")
-    public List<Ubicacion> buscarUbicacionesPorNombre(@PathVariable String texto) {
-        return ubicacionRepository.findByNombreContainingIgnoreCase(texto);
-    }
-
-    @GetMapping("/objeto/{nombreObjeto}")
-    public List<Ubicacion> getUbicacionesConObjeto(@PathVariable String nombreObjeto) {
-        return ubicacionRepository.findUbicacionesConObjeto(nombreObjeto);
+    public ResponseEntity<List<UbicacionDTO>> buscarUbicaciones(@PathVariable String texto) {
+        List<UbicacionDTO> ubicaciones = ubicacionService.buscarUbicaciones(texto);
+        return ResponseEntity.ok(ubicaciones);
     }
 
     @PostMapping
-    public Ubicacion createUbicacion(@RequestBody Ubicacion ubicacion) {
-        return ubicacionRepository.save(ubicacion);
+    public ResponseEntity<UbicacionDTO> createUbicacion(@Valid @RequestBody UbicacionDTO ubicacionDTO) {
+        UbicacionDTO created = ubicacionService.createUbicacion(ubicacionDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Ubicacion> updateUbicacion(@PathVariable Long id, @RequestBody Ubicacion ubicacionDetails) {
-        Optional<Ubicacion> optionalUbicacion = ubicacionRepository.findById(id);
-        if (optionalUbicacion.isPresent()) {
-            Ubicacion ubicacion = optionalUbicacion.get();
-            ubicacion.setNombre(ubicacionDetails.getNombre());
-            ubicacion.setTipo(ubicacionDetails.getTipo());
-            ubicacion.setDescripcion(ubicacionDetails.getDescripcion());
-            ubicacion.setPeligroNivel(ubicacionDetails.getPeligroNivel());
-
-            // Actualizar relaciones si se proporcionan
-            if (ubicacionDetails.getObjetosEncontrados() != null) {
-                ubicacion.setObjetosEncontrados(ubicacionDetails.getObjetosEncontrados());
-            }
-
-            return ResponseEntity.ok(ubicacionRepository.save(ubicacion));
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<UbicacionDTO> updateUbicacion(
+            @PathVariable Long id,
+            @Valid @RequestBody UbicacionDTO ubicacionDTO) {
+        UbicacionDTO updated = ubicacionService.updateUbicacion(id, ubicacionDTO);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUbicacion(@PathVariable Long id) {
-        if (ubicacionRepository.existsById(id)) {
-            ubicacionRepository.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+        ubicacionService.deleteUbicacion(id);
+        return ResponseEntity.noContent().build();
     }
 }
