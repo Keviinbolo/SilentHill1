@@ -139,7 +139,7 @@ public class SilentHill1Application {
 
             System.out.println(" Enemigos creados: " + enemigoRepository.count());
 
-            /*// MOSTRAR RESUMEN
+
             System.out.println("\n === BASE DE DATOS INICIALIZADA EXITOSAMENTE === ");
             System.out.println(" RESUMEN DE DATOS CREADOS:");
             System.out.println("    Ubicaciones: " + ubicacionRepository.count());
@@ -157,7 +157,7 @@ public class SilentHill1Application {
 
 
 
-           */
+
         };
     }
 }
